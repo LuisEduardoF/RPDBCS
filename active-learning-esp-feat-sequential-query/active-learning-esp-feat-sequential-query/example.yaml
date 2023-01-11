@@ -1,0 +1,30 @@
+---
+train_neuralnet: false
+train_single_classifiers: true
+train_whole_dataset: false # Train all methods in the whole train dataset (initial train dataset + pool dataset).
+init_train_size: 30
+init_train_config: [20, 20, 20, 2, 20]
+test_size: 0.2
+query_size: 25
+budget: 800
+hide_class: 3 # null or 0-4
+
+kfolds: 2
+
+base_clf:
+    - RF
+    # - knn
+
+query_strategies:
+    - "top-margin_random"
+    - "1-2-margin_random"
+    - "random_top-margin"
+    - "random_1-2-margin"
+    # - "entropy_random"
+    # - bald
+    # - k_center_greedy
+    # - random
+    # - entropy
+    # - random_entropy
+    # - k_center_greedy_entropy
+...
