@@ -547,9 +547,9 @@ def main(config, D, config_path):
 
             X0_new = np.append(X0, Xtest[examples], axis=0)
             Y0_new = np.append(Y0, Ytest[examples], axis=0)
-            
-            Xtest_new = numpy.delete(Xtest, examples, 0)
-            Ytest_new = numpy.delete(Ytest, examples, 0)
+
+            Xtest_new = np.delete(Xtest, examples, 0)
+            Ytest_new = np.delete(Ytest, examples, 0)
 
 
             
