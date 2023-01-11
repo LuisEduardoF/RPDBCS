@@ -469,7 +469,7 @@ def main(config, D, config_path):
 
     X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
     Y, Ynames = D.getMulticlassTargets()
-    print(D.asDataFrame().columns)
+    print(D.asDataFrame()["bcs name"].value_counts())
     # Yset = enumerate(set(Y))
     # Y, Ymap = pd.factorize(Y)
     # Ynames = {i: Ynames[oldi] for i, oldi in enumerate(Ymap)}
