@@ -542,7 +542,7 @@ def main(config, D, config_path):
         X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(features, Y,
                                                                  init_train_size=config.init_train_size,
                                                                  test_size=config.test_size)
-        print(random.sample(range(0, Ytest.len()), 5))
+        print(random.sample(range(0, Ytest.size), 5))
 
         for classifier_name, classifier, param_grid in base_classifiers:
             # n_jobs: You may not want all your cores being used.
