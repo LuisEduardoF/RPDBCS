@@ -469,9 +469,7 @@ def main(config, D, config_path):
 
     X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
     Y, Ynames = D.getMulticlassTargets()
-    print(D.asDataFrame()["bcs name"].value_counts())
-    print(X)
-    print(D.asDataFrame())
+
     # Yset = enumerate(set(Y))
     # Y, Ymap = pd.factorize(Y)
     # Ynames = {i: Ynames[oldi] for i, oldi in enumerate(Ymap)}
@@ -485,6 +483,8 @@ def main(config, D, config_path):
                                                              init_train_size=config.init_train_size,
                                                              test_size=config.test_size)
 
+    print(X0)
+    print(Xtest)
     # All classifiers scales features to mean=0 and std=1.
     base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
