@@ -483,8 +483,6 @@ def main(config, D, config_path):
                                                              init_train_size=config.init_train_size,
                                                              test_size=config.test_size)
 
-    print(X0)
-    print(Xtest)
     # All classifiers scales features to mean=0 and std=1.
     base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
@@ -543,6 +541,8 @@ def main(config, D, config_path):
         X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(features, Y,
                                                                  init_train_size=config.init_train_size,
                                                                  test_size=config.test_size)
+        print(random.sample(range(0, Ytest.len()), 5))
+
         for classifier_name, classifier, param_grid in base_classifiers:
             # n_jobs: You may not want all your cores being used.
             classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
