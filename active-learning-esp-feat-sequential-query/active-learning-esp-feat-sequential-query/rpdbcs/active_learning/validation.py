@@ -468,7 +468,7 @@ def main(config, D, config_path):
     query_strategies = config.query_strategies
 
     X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
-    print(D)
+    print(D, D.columns)
     Y, Ynames = D.getMulticlassTargets()
     # Yset = enumerate(set(Y))
     # Y, Ymap = pd.factorize(Y)
