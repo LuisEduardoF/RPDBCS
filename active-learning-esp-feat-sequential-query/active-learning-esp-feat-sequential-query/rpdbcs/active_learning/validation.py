@@ -408,6 +408,7 @@ def iterateActiveLearners(estimator: sklearn.base.BaseEstimator, X0, Y0, query_s
     returns:
         Generator where each item is a tuple of (str,:class:`modAL.ActiveLearner`).
     """
+    print("QUERY:", query_strategies)
     for qstrat_name, qstrat in query_strategies.items():
         new_estimator_name = "%s [%s]" % (estimator_name, qstrat_name)
         print(new_estimator_name)
@@ -586,10 +587,9 @@ def main(config, D, config_path):
         Xtest_new = np.delete(Xtest, examples, 0)
         Ytest_new = np.delete(Ytest, examples, 0)
 
-        print("SHAPE: X0_new = ", X0_new.shape, "SHAPE: Xtest_new = ", Xtest_new.shape)
         for data in [X0, X0_new]:
 
-            print("Results:", do_methods(X, Y, Ynames, data, Y0, Xpool, Ypool, Xtest_new, Ytest_new))
+            print("Results:", do_methods(X, Y, Ynames, data,  Y0, Xpool, Ypool, Xtest_new, Ytest_new))
 
 
 if __name__ == '__main__':
