@@ -507,7 +507,7 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
 
         ictaifeats_names = getICTAI2016FeaturesNames()
         features = D.asDataFrame()[ictaifeats_names].value
-        print("BASE": base_classifiers)
+        print("BASE", base_classifiers)
         for classifier_name, classifier, param_grid in base_classifiers:
             # n_jobs: You may not want all your cores being used.
             classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
