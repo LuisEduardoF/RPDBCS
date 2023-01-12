@@ -503,7 +503,6 @@ def main(config, D, config_path):
                                             config.query_size, config.budget,
                                             scoring, f_clf_name, config.hide_class)
                     triplet_cm_lists[f_clf_name] = cm_list
-                    print("R:", r, "Results:", Results)
                     Results.update(r)
             else:
                 r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
@@ -551,13 +550,13 @@ def main(config, D, config_path):
                                                     config.kfolds,
                                                     config.hide_class)
                 for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
-                    print(splitter)
                     f_clf_name = classifier_name + f' fold-{fold}'
                     r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
                                             Xtest, Ytest, query_strategies,
                                             config.query_size, config.budget,
                                             scoring, f_clf_name, config.hide_class)
                     handcraft_cm_lists[f_clf_name] = cm_list
+                    print("R:", r, "Results:", Results)
                     Results.update(r)
             else:
                 r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
