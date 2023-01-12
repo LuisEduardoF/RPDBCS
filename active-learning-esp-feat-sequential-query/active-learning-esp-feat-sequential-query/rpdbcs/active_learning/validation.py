@@ -554,7 +554,7 @@ def main(config, D, config_path):
                 for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
                     f_clf_name = classifier_name + f' fold-{fold}'
                     
-                    examples = random.choices(range(0, Xtest.size), k=5)
+                    examples = random.sample(range(0, Xtest.size), 5)
                     
                     X0_new = np.append(X0, Xtest[examples])
                     Y0_new = np.append(Y0, Ytest[examples])
