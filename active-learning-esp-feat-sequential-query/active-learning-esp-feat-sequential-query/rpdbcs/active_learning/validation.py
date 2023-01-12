@@ -464,12 +464,15 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
 
     gridsearch_sampler = KindaStratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=RANDOM_STATE)
     scoring = getMetrics(Ynames)
-    
+
     # All classifiers scales features to mean=0 and std=1.
     base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
     Results = {}  # All results are stored in this dict. The keys are the name of the classifiers.
     triplet_cm_lists = {}
+
+    # DEBUG: Base inicial sem k-fold
+    config.kfolds = None
     if config.train_neuralnet:
         transformers = getDeepTransformers()
         ###TripletNetwork + BaseClassifier Experiments:###
