@@ -556,6 +556,8 @@ def main(config, D, config_path):
                     
                     examples = random.sample(range(0, Xtest.size), 5)
                     
+                    print(examples, Xtest.size)
+                    print(Xtest[examples])
                     X0_new = np.append(X0, Xtest[examples], axis=0)
                     Y0_new = np.append(Y0, Ytest[examples], axis=0)
 
