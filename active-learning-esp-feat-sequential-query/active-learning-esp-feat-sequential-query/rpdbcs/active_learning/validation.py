@@ -556,8 +556,8 @@ def main(config, D, config_path):
                     
                     examples = random.choices(range(0, Xtest.size), k=5)
                     
-                    X0_new = X0.append(Xtest[examples])
-                    Y0_new = Y0.append(Ytest[examples])
+                    X0_new = numpy.append(X0, Xtest[examples])
+                    Y0_new = numpy.append(Y0, Ytest[examples])
 
                     Xtest = numpy.delete(Xtest, examples, axis=0)
                     Ytest = numpy.delete(Ytest, examples, axis=0)
