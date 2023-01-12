@@ -472,6 +472,8 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest, save_cm):
 
     Results = {}  # All results are stored in this dict. The keys are the name of the classifiers.
     triplet_cm_lists = {}
+    config.kfolds = None
+    
     if config.train_neuralnet:
         transformers = getDeepTransformers()
         ###TripletNetwork + BaseClassifier Experiments:###
