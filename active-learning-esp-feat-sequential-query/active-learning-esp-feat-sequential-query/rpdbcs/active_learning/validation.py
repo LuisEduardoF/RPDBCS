@@ -459,7 +459,12 @@ def run_active_learning(classifier: sklearn.base.BaseEstimator, X0, Y0,  Xpool, 
     return Results, cm_list
 
 def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
-    
+    global DEEP_CACHE_DIR, PIPELINE_CACHE_DIR
+    import pandas as pd
+    save_cm = str(config_path)
+    print(save_cm + '.handcraft_cm_lists.pkl')
+    print(save_cm + '.triplet_cm_lists.pkl')
+
     query_strategies = config.query_strategies
 
     gridsearch_sampler = KindaStratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=RANDOM_STATE)
@@ -624,7 +629,7 @@ def main(config, D, config_path):
         content = str(Array)
         file.write(content)
         file.close()
-        
+
 
 
 if __name__ == '__main__':
