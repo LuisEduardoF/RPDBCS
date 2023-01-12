@@ -545,8 +545,11 @@ def main(config, D, config_path):
         
         base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
+        results = []
         for i in range(31):
             examples = random.sample(range(0, Ytest.size), 5)
+
+            print("Caso: {}, Examples: {}".format(i, examples))
 
             X0_new = np.append(X0, Xtest[examples], axis=0)
             Y0_new = np.append(Y0, Ytest[examples], axis=0)
@@ -661,7 +664,7 @@ def main(config, D, config_path):
                             print("%s: %f" % (metric_name, rs[-1]))
                             for i, r in enumerate(rs):
                                 results_asmatrix.append((classif_name, metric_name, i, queried_samples[i], r))
-
+                result.append(results_asmatrix)
                 if config.save_file is not None:
                     df = pd.DataFrame(results_asmatrix,
                                     columns=['classifier name', 'metric name', 'step', 'train size', 'value'])
