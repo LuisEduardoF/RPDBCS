@@ -469,6 +469,7 @@ def main(config, D, config_path):
 
     X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
     Y, Ynames = D.getMulticlassTargets()
+    print(Ynames)
     # Yset = enumerate(set(Y))
     # Y, Ymap = pd.factorize(Y)
     # Ynames = {i: Ynames[oldi] for i, oldi in enumerate(Ymap)}
@@ -554,9 +555,9 @@ def main(config, D, config_path):
                 for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
                     f_clf_name = classifier_name + f' fold-{fold}'
                     
-                    examples = random.sample(range(0, len(Xtest)), 5)
-                    
-                    print("Examples choosen: {}".format(examples))
+                    # examples = random.sample(range(0, len(Xtest)), 5)
+                    examples = [755, 1028, 1412, 1964, 2754]
+                    print("Examples choosen: {}".format(examples), "Type of Examples: {}".format(Ytest[examples]))
                     
                     X0_new = np.append(X0, Xtest[examples], axis=0)
                     Y0_new = np.append(Y0, Ytest[examples], axis=0)
