@@ -458,7 +458,13 @@ def run_active_learning(classifier: sklearn.base.BaseEstimator, X0, Y0,  Xpool, 
         Results[estimator_name] = scores
     return Results, cm_list
 
-def do_methods(X, Y, X0, Y0, Xpool, Ypool, Xtest, Ytest):
+def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
+    
+    query_strategies = config.query_strategies
+
+    gridsearch_sampler = KindaStratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=RANDOM_STATE)
+    scoring = getMetrics(Ynames)
+    
     # All classifiers scales features to mean=0 and std=1.
     base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
@@ -582,8 +588,6 @@ def main(config, D, config_path):
     print(save_cm + '.handcraft_cm_lists.pkl')
     print(save_cm + '.triplet_cm_lists.pkl')
 
-    query_strategies = config.query_strategies
-
     X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
     Y, Ynames = D.getMulticlassTargets()
     # Yset = enumerate(set(Y))
@@ -591,15 +595,14 @@ def main(config, D, config_path):
     # Ynames = {i: Ynames[oldi] for i, oldi in enumerate(Ymap)}
     # group_ids = D.groupids('bcs')
     # sampler used on all gridsearches.
-    gridsearch_sampler = KindaStratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=RANDOM_STATE)
-    scoring = getMetrics(Ynames)
+
 
     # (X0,Y0): Initial train dataset.
     X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(X, Y,
                                                              init_train_size=config.init_train_size,
                                                              test_size=config.test_size)
 
-    do_methods(X, Y, X0, Y0, Xpool, Ypool, Xtest, Ytest)
+    do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest)
 
 
 if __name__ == '__main__':
