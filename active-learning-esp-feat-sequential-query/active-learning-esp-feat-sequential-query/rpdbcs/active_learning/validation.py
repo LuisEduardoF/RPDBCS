@@ -408,7 +408,6 @@ def iterateActiveLearners(estimator: sklearn.base.BaseEstimator, X0, Y0, query_s
     returns:
         Generator where each item is a tuple of (str,:class:`modAL.ActiveLearner`).
     """
-    print("QUERY:", query_strategies)
     for qstrat_name, qstrat in query_strategies.items():
         new_estimator_name = "%s [%s]" % (estimator_name, qstrat_name)
         print(new_estimator_name)
@@ -471,15 +470,29 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
 
     Results = {}  # All results are stored in this dict. The keys are the name of the classifiers.
     triplet_cm_lists = {}
-
+    config.kfolds = None
     if config.train_neuralnet:
         transformers = getDeepTransformers()
         ###TripletNetwork + BaseClassifier Experiments:###
         for classifier_name, classifier in combineTransformerClassifier(transformers, base_classifiers):
-            r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
-                                    query_strategies, config.query_size, config.budget, scoring, classifier_name)
-            # r = run_active_learning_kfold(classifier, X, Y, config, scoring, classifier_name)
-            Results.update(r)
+            if config.kfolds is not None:
+                splitter = SplitActiveLearningKFold(X, Y,
+                                                    config.init_train_size,
+                                                    config.kfolds,
+                                                    config.hide_class)
+                for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
+                    f_clf_name = classifier_name + f' fold-{fold}'
+                    r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
+                                            Xtest, Ytest, query_strategies,
+                                            config.query_size, config.budget,
+                                            scoring, f_clf_name, config.hide_class)
+                    triplet_cm_lists[f_clf_name] = cm_list
+                    Results.update(r)
+            else:
+                r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
+                                        query_strategies, config.query_size, config.budget, scoring, classifier_name)
+                # r = run_active_learning_kfold(classifier, X, Y, config, scoring, classifier_name)
+                Results.update(r)
         joblib.dump(triplet_cm_lists, save_cm + '.triplet_cm_lists.pkl')
 
         if config.train_whole_dataset:
@@ -503,20 +516,35 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
         # more_query_strats: to avoid spend too much time training one neural network for each query function,
         #   only fast classifier are trained with all query functions.
         more_query_strats = {'top margin': queryfunction_wrapper(uncertainty_sampling),
-                                '1-2 margin': queryfunction_wrapper(margin_sampling)}
+                             '1-2 margin': queryfunction_wrapper(margin_sampling)}
         # query_strategies = {**query_strategies, **more_query_strats}
 
         ictaifeats_names = getICTAI2016FeaturesNames()
         features = D.asDataFrame()[ictaifeats_names].values
+        X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(features, Y,
+                                                                 init_train_size=config.init_train_size,
+                                                                 test_size=config.test_size)
         for classifier_name, classifier, param_grid in base_classifiers:
-
-            print("C_n:", classifier_name, "C", classifier, "P", param_grid)
             # n_jobs: You may not want all your cores being used.
             classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
-                                        cv=gridsearch_sampler)
-            r = run_active_learning(classifier, X0, Y0, Xpool, Ypool, Xtest, Ytest,
-                                    query_strategies, config.query_size, config.budget, scoring, classifier_name)
-            Results.update(r)
+                                      cv=gridsearch_sampler)
+            if config.kfolds is not None:
+                splitter = SplitActiveLearningKFold(features, Y,
+                                                    config.init_train_size,
+                                                    config.kfolds,
+                                                    config.hide_class)
+                for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
+                    f_clf_name = classifier_name + f' fold-{fold}'
+                    r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
+                                            Xtest, Ytest, query_strategies,
+                                            config.query_size, config.budget,
+                                            scoring, f_clf_name, config.hide_class)
+                    handcraft_cm_lists[f_clf_name] = cm_list
+                    Results.update(r)
+            else:
+                r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
+                                        query_strategies, config.query_size, config.budget, scoring, classifier_name)
+                Results.update(r)
         joblib.dump(handcraft_cm_lists, save_cm + '.handcraft_cm_lists.pkl')
 
         if config.train_whole_dataset:
@@ -525,7 +553,7 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
             Yf = np.hstack((Y0, Ypool))
             for classifier_name, classifier, param_grid in base_classifiers:
                 classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
-                                            cv=gridsearch_sampler)
+                                          cv=gridsearch_sampler)
                 r = run_active_learning(classifier, Xf, Yf,  None, None, Xtest, Ytest,
                                         {'random': query_strategies['random']}, 1, 0, scoring, classifier_name+" (alldata)")
                 Results.update(r)
@@ -547,7 +575,7 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
 
     if config.save_file is not None:
         df = pd.DataFrame(results_asmatrix,
-                            columns=['classifier name', 'metric name', 'step', 'train size', 'value'])
+                          columns=['classifier name', 'metric name', 'step', 'train size', 'value'])
         df.to_csv(config.save_file, index=False)
     rmtree(PIPELINE_CACHE_DIR)
     rmtree(DEEP_CACHE_DIR)
