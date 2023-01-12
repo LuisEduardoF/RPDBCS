@@ -556,7 +556,7 @@ def main(config, D, config_path):
                     f_clf_name = classifier_name + f' fold-{fold}'
                     
                     # examples = random.sample(range(0, len(Xtest)), 5)
-                    examples = [755, 1028, 1412, 1964, 2754]
+                    examples = [1754, 940, 1517, 767, 838]
                     print("Examples choosen: {}".format(examples), "Type of Examples: {}".format(Ytest[examples]))
                     
                     X0_new = np.append(X0, Xtest[examples], axis=0)
