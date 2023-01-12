@@ -471,30 +471,14 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
     Results = {}  # All results are stored in this dict. The keys are the name of the classifiers.
     triplet_cm_lists = {}
 
-    # DEBUG: Base inicial sem k-fold
-    config.kfolds = None
     if config.train_neuralnet:
         transformers = getDeepTransformers()
         ###TripletNetwork + BaseClassifier Experiments:###
         for classifier_name, classifier in combineTransformerClassifier(transformers, base_classifiers):
-            if config.kfolds is not None:
-                splitter = SplitActiveLearningKFold(X, Y,
-                                                    config.init_train_size,
-                                                    config.kfolds,
-                                                    config.hide_class)
-                for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
-                    f_clf_name = classifier_name + f' fold-{fold}'
-                    r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
-                                            Xtest, Ytest, query_strategies,
-                                            config.query_size, config.budget,
-                                            scoring, f_clf_name, config.hide_class)
-                    triplet_cm_lists[f_clf_name] = cm_list
-                    Results.update(r)
-            else:
-                r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
-                                        query_strategies, config.query_size, config.budget, scoring, classifier_name)
-                # r = run_active_learning_kfold(classifier, X, Y, config, scoring, classifier_name)
-                Results.update(r)
+            r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
+                                    query_strategies, config.query_size, config.budget, scoring, classifier_name)
+            # r = run_active_learning_kfold(classifier, X, Y, config, scoring, classifier_name)
+            Results.update(r)
         joblib.dump(triplet_cm_lists, save_cm + '.triplet_cm_lists.pkl')
 
         if config.train_whole_dataset:
