@@ -574,8 +574,20 @@ def main(config, D, config_path):
     X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(X, Y,
                                                              init_train_size=config.init_train_size,
                                                              test_size=config.test_size)
+    all_results = []
+    for i in range(31):
+        examples = random.sample(range(0, Ytest.size), 5)
 
-    print("Results:", do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest))
+        print("Caso: {}, Examples: {}".format(i, examples))
+
+        X0_new = np.append(X0, Xtest[examples], axis=0)
+        Y0_new = np.append(Y0, Ytest[examples], axis=0)
+        
+        Xtest_new = np.delete(Xtest, examples, 0)
+        Ytest_new = np.delete(Ytest, examples, 0)
+
+        for data in [X0, X0_new]:
+            print("Results:", do_methods(X, Y, Ynames, data, Y0, Xpool, Ypool, Xtest_new, Ytest_new))
 
 
 if __name__ == '__main__':
