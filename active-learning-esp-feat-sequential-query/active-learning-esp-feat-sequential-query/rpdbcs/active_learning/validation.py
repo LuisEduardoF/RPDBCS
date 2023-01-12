@@ -615,8 +615,16 @@ def main(config, D, config_path):
         Ytest_new = np.delete(Ytest, examples, 0)
 
         for data in [X0, X0_new]:
+            all_results.append(do_methods(X, Y, Ynames, data,  Y0, Xpool, Ypool, Xtest_new, Ytest_new))
+        
+        numpy.array(all_results)
 
-            print("Results:", do_methods(X, Y, Ynames, data,  Y0, Xpool, Ypool, Xtest_new, Ytest_new))
+        file = open("out.txt", "w+")
+
+        content = str(Array)
+        file.write(content)
+        file.close()
+        
 
 
 if __name__ == '__main__':
