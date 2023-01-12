@@ -573,6 +573,7 @@ def main(config, D, config_path):
     X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(X, Y,
                                                              init_train_size=config.init_train_size,
                                                              test_size=config.test_size)
+    print("SHAPE: X0 = ", X0.shape, "SHAPE: Xtest = ", Xtest.shape)
     all_results = []
     for i in range(31):
         examples = random.sample(range(0, Ytest.size), 5)
@@ -585,7 +586,9 @@ def main(config, D, config_path):
         Xtest_new = np.delete(Xtest, examples, 0)
         Ytest_new = np.delete(Ytest, examples, 0)
 
+        print("SHAPE: X0_new = ", X0_new.shape, "SHAPE: Xtest_new = ", Xtest_new.shape)
         for data in [X0, X0_new]:
+
             print("Results:", do_methods(X, Y, Ynames, data, Y0, Xpool, Ypool, Xtest_new, Ytest_new))
 
 
