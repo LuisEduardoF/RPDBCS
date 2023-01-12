@@ -507,14 +507,11 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
 
         ictaifeats_names = getICTAI2016FeaturesNames()
         features = D.asDataFrame()[ictaifeats_names].values
-        X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(features, Y,
-                                                                    init_train_size=config.init_train_size,
-                                                                    test_size=config.test_size)
         for classifier_name, classifier, param_grid in base_classifiers:
             # n_jobs: You may not want all your cores being used.
             classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
                                         cv=gridsearch_sampler)
-            r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
+            r = run_active_learning(classifier, X0, Y0, Xpool, Ypool, Xtest, Ytest,
                                     query_strategies, config.query_size, config.budget, scoring, classifier_name)
             Results.update(r)
         joblib.dump(handcraft_cm_lists, save_cm + '.handcraft_cm_lists.pkl')
