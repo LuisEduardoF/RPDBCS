@@ -458,10 +458,7 @@ def run_active_learning(classifier: sklearn.base.BaseEstimator, X0, Y0,  Xpool, 
         Results[estimator_name] = scores
     return Results, cm_list
 
-def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
-    global DEEP_CACHE_DIR, PIPELINE_CACHE_DIR
-    import pandas as pd
-    save_cm = str(config_path)
+def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest, save_cm):
     print(save_cm + '.handcraft_cm_lists.pkl')
     print(save_cm + '.triplet_cm_lists.pkl')
 
@@ -620,7 +617,7 @@ def main(config, D, config_path):
         Ytest_new = np.delete(Ytest, examples, 0)
 
         for data in [X0, X0_new]:
-            all_results.append(do_methods(X, Y, Ynames, data,  Y0, Xpool, Ypool, Xtest_new, Ytest_new))
+            all_results.append(do_methods(X, Y, Ynames, data,  Y0, Xpool, Ypool, Xtest_new, Ytest_new, save_cm))
         
         numpy.array(all_results)
 
