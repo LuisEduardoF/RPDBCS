@@ -509,7 +509,7 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
         features = D.asDataFrame()[ictaifeats_names].values
         for classifier_name, classifier, param_grid in base_classifiers:
 
-            print("C_n:", classif_name, "C", classifier, "P", param_grid)
+            print("C_n:", classifier_name, "C", classifier, "P", param_grid)
             # n_jobs: You may not want all your cores being used.
             classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
                                         cv=gridsearch_sampler)
