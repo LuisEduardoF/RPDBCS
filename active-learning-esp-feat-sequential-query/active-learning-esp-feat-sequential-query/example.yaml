@@ -9,6 +9,8 @@ query_size: 25
 budget: 800
 hide_class: 3 # null or 0-4
 
+kfolds: None
+
 base_clf:
     - RF
     # - knn
