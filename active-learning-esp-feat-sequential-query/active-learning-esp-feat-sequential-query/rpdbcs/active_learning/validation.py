@@ -506,7 +506,7 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
         # query_strategies = {**query_strategies, **more_query_strats}
 
         ictaifeats_names = getICTAI2016FeaturesNames()
-        features = D.asDataFrame()[ictaifeats_names].value
+        features = D.asDataFrame()[ictaifeats_names].values
         print("BASE", base_classifiers)
         for classifier_name, classifier, param_grid in base_classifiers:
             # n_jobs: You may not want all your cores being used.
