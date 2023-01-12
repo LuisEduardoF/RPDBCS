@@ -486,6 +486,8 @@ def main(config, D, config_path):
     base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
     Results = {}  # All results are stored in this dict. The keys are the name of the classifiers.
+    Results_new = {}
+
     triplet_cm_lists = {}
     if config.train_neuralnet:
         transformers = getDeepTransformers()
@@ -551,13 +553,28 @@ def main(config, D, config_path):
                                                     config.hide_class)
                 for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
                     f_clf_name = classifier_name + f' fold-{fold}'
+                    
+                    examples = random.choice(range(0, Xtest.size), k=5)
+                    
+                    X0_new = X0.append(Xtest[examples])
+                    Y0_new = Y0.append(Ytest[examples])
+
+                    Xtest = numpy.delete(Xtest, examples, axis=0)
+                    Ytest = numpy.delete(Ytest, examples, axis=0)
+
                     r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
                                             Xtest, Ytest, query_strategies,
                                             config.query_size, config.budget,
                                             scoring, f_clf_name, config.hide_class)
                     handcraft_cm_lists[f_clf_name] = cm_list
-                    print("R:", r, "Results:", Results)
                     Results.update(r)
+
+                    r_new, cm_list_new = run_active_learning(classifier, X0_new, Y0_new,  Xpool, Ypool,
+                                            Xtest, Ytest, query_strategies,
+                                            config.query_size, config.budget,
+                                            scoring, f_clf_name, config.hide_class)
+                    handcraft_cm_lists[f_clf_name] = cm_list
+                    Results_new.update(r_new)
             else:
                 r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
                                         query_strategies, config.query_size, config.budget, scoring, classifier_name)
@@ -578,6 +595,22 @@ def main(config, D, config_path):
     ###Saving results###
     results_asmatrix = []
     for classif_name, result in Results.items():
+        print("===%s===" % classif_name)
+        queried_samples = result['queried samples']
+        for rname, rs in result.items():
+            if(rname.startswith('test_') or 'time' in rname):
+                if(rname.startswith('test_')):
+                    metric_name = rname.split('_', 1)[-1]
+                else:
+                    metric_name = rname
+                print("%s: %f" % (metric_name, rs[-1]))
+                for i, r in enumerate(rs):
+                    results_asmatrix.append((classif_name, metric_name, i, queried_samples[i], r))
+
+###Saving results###
+    print("WITH TEST EXAMPLES IN TRAIN:")
+    results_asmatrix = []
+    for classif_name, result in Results_new.items():
         print("===%s===" % classif_name)
         queried_samples = result['queried samples']
         for rname, rs in result.items():
