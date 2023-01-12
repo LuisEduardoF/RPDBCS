@@ -556,11 +556,11 @@ def main(config, D, config_path):
                     
                     examples = random.sample(range(0, Xtest.size), 5)
                     
-                    X0_new = np.append(X0, Xtest[examples])
-                    Y0_new = np.append(Y0, Ytest[examples])
+                    X0_new = np.append(X0, Xtest[examples], axis=0)
+                    Y0_new = np.append(Y0, Ytest[examples], axis=0)
 
-                    Xtest = np.delete(Xtest, examples, axis=0)
-                    Ytest = np.delete(Ytest, examples, axis=0)
+                    Xtest = np.delete(Xtest, examples, 0)
+                    Ytest = np.delete(Ytest, examples, 0)
 
                     r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
                                             Xtest, Ytest, query_strategies,
