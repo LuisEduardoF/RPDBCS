@@ -458,22 +458,35 @@ def run_active_learning(classifier: sklearn.base.BaseEstimator, X0, Y0,  Xpool, 
         Results[estimator_name] = scores
     return Results, cm_list
 
-def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest, save_cm):
+def main(config, D, config_path):
+    global DEEP_CACHE_DIR, PIPELINE_CACHE_DIR
+    import pandas as pd
+    save_cm = str(config_path)
     print(save_cm + '.handcraft_cm_lists.pkl')
     print(save_cm + '.triplet_cm_lists.pkl')
 
     query_strategies = config.query_strategies
 
+    X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
+    Y, Ynames = D.getMulticlassTargets()
+    # Yset = enumerate(set(Y))
+    # Y, Ymap = pd.factorize(Y)
+    # Ynames = {i: Ynames[oldi] for i, oldi in enumerate(Ymap)}
+    # group_ids = D.groupids('bcs')
+    # sampler used on all gridsearches.
     gridsearch_sampler = KindaStratifiedShuffleSplit(n_splits=1, test_size=0.25, random_state=RANDOM_STATE)
     scoring = getMetrics(Ynames)
+
+    # (X0,Y0): Initial train dataset.
+    X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(X, Y,
+                                                             init_train_size=config.init_train_size,
+                                                             test_size=config.test_size)
 
     # All classifiers scales features to mean=0 and std=1.
     base_classifiers = getBaseClassifiers(('normalizer', StandardScaler()), config=config)
 
     Results = {}  # All results are stored in this dict. The keys are the name of the classifiers.
     triplet_cm_lists = {}
-    config.kfolds = None
-    
     if config.train_neuralnet:
         transformers = getDeepTransformers()
         ###TripletNetwork + BaseClassifier Experiments:###
@@ -537,6 +550,7 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest, save_cm):
                                                     config.kfolds,
                                                     config.hide_class)
                 for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
+                    print(splitter)
                     f_clf_name = classifier_name + f' fold-{fold}'
                     r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
                                             Xtest, Ytest, query_strategies,
@@ -582,52 +596,6 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest, save_cm):
         df.to_csv(config.save_file, index=False)
     rmtree(PIPELINE_CACHE_DIR)
     rmtree(DEEP_CACHE_DIR)
-
-    return Results
-
-def main(config, D, config_path):
-    global DEEP_CACHE_DIR, PIPELINE_CACHE_DIR
-    import pandas as pd
-    save_cm = str(config_path)
-    print(save_cm + '.handcraft_cm_lists.pkl')
-    print(save_cm + '.triplet_cm_lists.pkl')
-
-    X = np.expand_dims(D.asMatrix()[:, :6100], axis=1)  # Transforms shape (n,10800) to (n,1,6100).
-    Y, Ynames = D.getMulticlassTargets()
-    # Yset = enumerate(set(Y))
-    # Y, Ymap = pd.factorize(Y)
-    # Ynames = {i: Ynames[oldi] for i, oldi in enumerate(Ymap)}
-    # group_ids = D.groupids('bcs')
-    # sampler used on all gridsearches.
-
-
-    # (X0,Y0): Initial train dataset.
-    X0, Y0, Xpool, Ypool, Xtest, Ytest = SplitActiveLearning(X, Y,
-                                                             init_train_size=config.init_train_size,
-                                                             test_size=config.test_size)
-    print("SHAPE: X0 = ", X0.shape, "SHAPE: Xtest = ", Xtest.shape)
-    all_results = []
-    for i in range(31):
-        examples = random.sample(range(0, Ytest.size), 5)
-
-        print("Caso: {}, Examples: {}".format(i, examples))
-
-        X0_new = np.append(X0, Xtest[examples], axis=0)
-        Y0_new = np.append(Y0, Ytest[examples], axis=0)
-        
-        Xtest_new = np.delete(Xtest, examples, 0)
-        Ytest_new = np.delete(Ytest, examples, 0)
-
-        for data in [X0, X0_new]:
-            all_results.append(do_methods(X, Y, Ynames, data,  Y0, Xpool, Ypool, Xtest_new, Ytest_new, save_cm))
-        
-        numpy.array(all_results)
-
-        file = open("out.txt", "w+")
-
-        content = str(Array)
-        file.write(content)
-        file.close()
 
 
 

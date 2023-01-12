@@ -7,5 +7,5 @@ pip install git+http://gitlab.ninfa.inf.ufes.br/ninfa-ufes/deep-rpdbcs#subdirect
 # Usage
 ```
 cd rpdbcs/active_learning
-python validation.py -i data/data_classified_v6 -o results.csv
+python3 validation.py -i /home/lefcamara/NINFA/active-learning-esp/data_classified_v6 -o results.csv -c ../../example.yaml
 ```
