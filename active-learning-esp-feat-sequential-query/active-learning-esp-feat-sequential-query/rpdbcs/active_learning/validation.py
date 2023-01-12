@@ -514,23 +514,9 @@ def do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest):
             # n_jobs: You may not want all your cores being used.
             classifier = GridSearchCV(classifier, param_grid, scoring='f1_macro', n_jobs=-1,
                                         cv=gridsearch_sampler)
-            if config.kfolds is not None:
-                splitter = SplitActiveLearningKFold(features, Y,
-                                                    config.init_train_size,
-                                                    config.kfolds,
-                                                    config.hide_class)
-                for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
-                    f_clf_name = classifier_name + f' fold-{fold}'
-                    r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
-                                            Xtest, Ytest, query_strategies,
-                                            config.query_size, config.budget,
-                                            scoring, f_clf_name, config.hide_class)
-                    handcraft_cm_lists[f_clf_name] = cm_list
-                    Results.update(r)
-            else:
-                r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
-                                        query_strategies, config.query_size, config.budget, scoring, classifier_name)
-                Results.update(r)
+            r = run_active_learning(classifier, X0, Y0,  Xpool, Ypool, Xtest, Ytest,
+                                    query_strategies, config.query_size, config.budget, scoring, classifier_name)
+            Results.update(r)
         joblib.dump(handcraft_cm_lists, save_cm + '.handcraft_cm_lists.pkl')
 
         if config.train_whole_dataset:
@@ -589,7 +575,7 @@ def main(config, D, config_path):
                                                              init_train_size=config.init_train_size,
                                                              test_size=config.test_size)
 
-    do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest)
+    print("Results:", do_methods(X, Y, Ynames, X0, Y0, Xpool, Ypool, Xtest, Ytest))
 
 
 if __name__ == '__main__':
