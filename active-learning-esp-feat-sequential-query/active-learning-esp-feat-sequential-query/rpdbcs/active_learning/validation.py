@@ -555,13 +555,14 @@ def main(config, D, config_path):
                 for fold, (X0, Y0, Xpool, Ypool, Xtest, Ytest) in enumerate(splitter):
                     f_clf_name = classifier_name + f' fold-{fold}'
                     
-                    examples = random.sample(range(0, len(Xtest)), 5)
+                    print(Xtest)
+                    # examples = random.sample(range(0, len(Xtest)), 5)
                     
-                    X0_new = np.append(X0, Xtest[examples], axis=0)
-                    Y0_new = np.append(Y0, Ytest[examples], axis=0)
+                    # X0_new = np.append(X0, Xtest[examples], axis=0)
+                    # Y0_new = np.append(Y0, Ytest[examples], axis=0)
 
-                    Xtest = np.delete(Xtest, examples, 0)
-                    Ytest = np.delete(Ytest, examples, 0)
+                    # Xtest = np.delete(Xtest, examples, 0)
+                    # Ytest = np.delete(Ytest, examples, 0)
 
                     r, cm_list = run_active_learning(classifier, X0, Y0,  Xpool, Ypool,
                                             Xtest, Ytest, query_strategies,
