@@ -558,7 +558,7 @@ def main(config, D, config_path):
                     examples = np.random.choice(np.where(Ytest == 0)[0], 5, replace=False)
                     # examples = random.sample(range(0, len(Xtest)), 5)
                     
-                    print("Examples Choosen: {}".format(examples))
+                    print("Examples Choosen: {}, Classes: {}".format(examples, Ytest[examples]))
                     X0_new = np.append(X0, Xtest[examples], axis=0)
                     Y0_new = np.append(Y0, Ytest[examples], axis=0)
 
