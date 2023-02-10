@@ -63,6 +63,7 @@ def main(signals, features, Y, esp_ids, config):
     Results = {}
 
     print("Training...")
+    print(sampler)
     fe_list = config.getFeatureExtractors()
     for classifier_name, classifier in combineTransformerClassifier(fe_list, base_classifiers):
         print(classifier_name)
